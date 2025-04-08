@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\ShopController;
+use App\Http\Controllers\CartController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -31,6 +32,13 @@ Route::get('/login', function () {
 Route::get('/cart', function () {
     return view('pages.cart');
 });
+
+Route::get('/cart', [CartController::class, 'show'])->name('cart');
+// Add to cart (via AJAX)
+Route::post('/add-cart', [CartController::class, 'add'])->name('add-cart');
+
+// Update quantity (via AJAX)
+Route::post('/update-cart', [CartController::class, 'update'])->name('update-cart');
 Route::get('/user', function () {
     return view('pages.user');
 });

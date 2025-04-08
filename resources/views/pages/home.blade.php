@@ -404,7 +404,7 @@ $browserCategories = [
             </div>
             <div class="product-weight">{{ $product->quantity }} Gm</div>
             <div class="buttons">
-                <button class="add-to-cart" onclick="toggleCart(this)">Add to Cart</button>
+                <button class="add-to-cart" data-product-id="{{ $product->id }}">Add to Cart</button>
 
                 <a href="" target="_blank" class="whatsapp-btn">
                     <i class="fa-brands fa-whatsapp"></i>
@@ -509,7 +509,7 @@ $browserCategories = [
                 </div>
                 <div class="product-weight">{{ $product->quantity }} Gm</div>
                 <div class="buttons">
-                    <button class="add-to-cart" onclick="toggleCart(this)">Add to Cart</button>
+                    <button class="add-to-cart" data-product-id="{{ $product->id }}>Add to Cart</button>
 
                     <a href="" target="_blank" class="whatsapp-btn">
                         <i class="fa-brands fa-whatsapp"></i>
@@ -595,7 +595,7 @@ $browserCategories = [
             </div>
             <div class="product-weight">{{ $product->quantity }} Gm</div>
             <div class="buttons">
-                <button class="add-to-cart" onclick="toggleCart(this)">Add to Cart</button>
+                <button class="add-to-cart"  data-product-id="{{ $product->id }}">Add to Cart</button>
 
                 <a href="" target="_blank" class="whatsapp-btn">
                     <i class="fa-brands fa-whatsapp"></i>
@@ -766,12 +766,29 @@ document.addEventListener("click", function(event) {
 
     // अगर "Add to Cart" बटन पर क्लिक हुआ
     if (target.classList.contains("add-to-cart") && !target.classList.contains("cart-controls-active")) {
-        target.innerHTML = `
-        <button class="qty-btn decrease">-</button>
-        <span class="cart-count">1</span>
-        <button class="qty-btn increase">+</button>
-    `;
-        target.classList.add("cart-controls-active"); // नया स्टाइल
+
+        let productId = target.getAttribute("data-product-id");
+        fetch("/add-cart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                product_id: productId
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                target.innerHTML = `
+                    <button class="qty-btn decrease">-</button>
+                    <span class="cart-count">1</span>
+                    <button class="qty-btn increase">+</button>
+                `;
+                target.classList.add("cart-controls-active");
+            }
+        });
     }
 
     // "+" बटन पर क्लिक करने पर quantity बढ़ेगी
@@ -779,21 +796,45 @@ document.addEventListener("click", function(event) {
         let countSpan = target.parentElement.querySelector(".cart-count");
         let count = parseInt(countSpan.textContent);
         countSpan.textContent = count + 1;
+
+        let productId = target.parentElement.getAttribute("data-product-id") || target.closest(".add-to-cart").getAttribute("data-product-id");
+
+        // Update quantity in DB
+        updateCart(productId, count + 1);
     }
 
     // "-" बटन पर क्लिक करने पर quantity घटेगी
     if (target.classList.contains("decrease")) {
         let countSpan = target.parentElement.querySelector(".cart-count");
         let count = parseInt(countSpan.textContent);
+        let wrapper = target.parentElement;
+
+        let productId = wrapper.getAttribute("data-product-id") ||
+                        target.closest(".add-to-cart").getAttribute("data-product-id");
 
         if (count > 1) {
             countSpan.textContent = count - 1;
+            updateCart(productId, count - 1);
         } else {
-            // अगर quantity 1 से नीचे जाएगी, तो बटन वापस "Add to Cart" बन जाएगा
-            let addToCartBtn = target.parentElement;
-            addToCartBtn.innerHTML = `Add to Cart`;
-            addToCartBtn.classList.remove("cart-controls-active");
+            // Remove from cart (or set quantity = 0)
+            wrapper.innerHTML = `Add to Cart`;
+            wrapper.classList.remove("cart-controls-active");
+            updateCart(productId, 0); // 0 means remove
         }
+    }
+
+    function updateCart(productId, quantity) {
+        fetch("/update-cart", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                quantity: quantity
+            })
+        });
     }
 });
 
