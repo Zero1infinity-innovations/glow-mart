@@ -1,0 +1,21 @@
+body{
+    user-select: none;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+#background{
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/app/map.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+#main-card{
+    opacity: 0.90;
+}
+#main-card:hover{
+   opacity: 1;
+   transition: ease-in-out 0.5s;
+}
