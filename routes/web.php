@@ -10,19 +10,14 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\ShopController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PaymentController;
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::get('/', function () {
-    $products = Product::orderBy('id', 'desc')->get();
-    $categories  = Category::with(['subcategories' => function ($query) {
-        $query->where('sub_menu_item', 1);
-    }])->where('menu_item', 1)->orderBy('id', 'desc')->get();
 
-    // $subCategories  = SubCategory::where('sub_menu_item', 1)->get();
-    return view('pages.home', compact('products','categories'));
-});
+Route::get('/', [HomeController::class, "index"])->name('home');
 Route::get('/category', function () {
     return view('pages.category');
 });
@@ -39,6 +34,20 @@ Route::post('/add-cart', [CartController::class, 'add'])->name('add-cart');
 
 // Update quantity (via AJAX)
 Route::post('/update-cart', [CartController::class, 'update'])->name('update-cart');
+
+// on cart page
+Route::post('/update-quantity', [CartController::class, 'updateQuantity'])->name('update-quantity');
+// create order
+Route::post('/create-order', [PaymentController::class, 'createOrder'])->name('createOrder');
+
+// payment
+Route::post('/payment-success', [PaymentController::class, 'paymentSuccess'])->name('paymentSuccess');
+
+// after successfylly payment
+Route::get('/order-placed', [PaymentController::class, 'orderPlaced'])->name('orderPlaced');
+
+
+
 Route::get('/user', function () {
     return view('pages.user');
 });

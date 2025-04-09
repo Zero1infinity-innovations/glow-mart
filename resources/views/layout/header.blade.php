@@ -74,7 +74,7 @@
                         @endauth
                     </ul>
                 </div>
-                <a href="/cart" class="btn px-2 d-none d-md-inline"><i class="bi bi-cart"></i></a>
+                <a href="{{ route('frontend.cart') }}" class="btn px-2 d-none d-md-inline"><i class="bi bi-cart"></i></a>
                 <a href="#" class="btn px-2" style="color: rgb(14, 139, 14);"><i class="fab fa-whatsapp"></i></a>
             </div>
 

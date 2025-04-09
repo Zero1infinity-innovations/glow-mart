@@ -404,7 +404,16 @@ $browserCategories = [
             </div>
             <div class="product-weight">{{ $product->quantity }} Gm</div>
             <div class="buttons">
-                <button class="add-to-cart" data-product-id="{{ $product->id }}">Add to Cart</button>
+                {{-- <button class="add-to-cart" data-product-id="{{ $product->id }}">Add to Cart</button> --}}
+                @if(isset($cartItems[$product->id]))
+                    <div class="add-to-cart cart-controls-active" data-product-id="{{ $product->id }}">
+                        <button class="qty-btn decrease">-</button>
+                        <span class="cart-count">{{ $cartItems[$product->id] }}</span>
+                        <button class="qty-btn increase">+</button>
+                    </div>
+                @else
+                    <button class="add-to-cart" data-product-id="{{ $product->id }}">Add to Cart</button>
+                @endif
 
                 <a href="" target="_blank" class="whatsapp-btn">
                     <i class="fa-brands fa-whatsapp"></i>
@@ -509,8 +518,16 @@ $browserCategories = [
                 </div>
                 <div class="product-weight">{{ $product->quantity }} Gm</div>
                 <div class="buttons">
-                    <button class="add-to-cart" data-product-id="{{ $product->id }}>Add to Cart</button>
-
+                    {{-- <button class="add-to-cart" data-product-id="{{ $product->id }}">Add to Cart</button> --}}
+                    @if(isset($cartItems[$product->id]))
+                        <div class="add-to-cart cart-controls-active" data-product-id="{{ $product->id }}">
+                            <button class="qty-btn decrease">-</button>
+                            <span class="cart-count">{{ $cartItems[$product->id] }}</span>
+                            <button class="qty-btn increase">+</button>
+                        </div>
+                    @else
+                        <button class="add-to-cart" data-product-id="{{ $product->id }}">Add to Cart</button>
+                    @endif
                     <a href="" target="_blank" class="whatsapp-btn">
                         <i class="fa-brands fa-whatsapp"></i>
                     </a>
@@ -595,7 +612,16 @@ $browserCategories = [
             </div>
             <div class="product-weight">{{ $product->quantity }} Gm</div>
             <div class="buttons">
-                <button class="add-to-cart"  data-product-id="{{ $product->id }}">Add to Cart</button>
+                {{-- <button class="add-to-cart"  data-product-id="{{ $product->id }}">Add to Cart</button> --}}
+                @if(isset($cartItems[$product->id]))
+                    <div class="add-to-cart cart-controls-active" data-product-id="{{ $product->id }}">
+                        <button class="qty-btn decrease">-</button>
+                        <span class="cart-count">{{ $cartItems[$product->id] }}</span>
+                        <button class="qty-btn increase">+</button>
+                    </div>
+                @else
+                    <button class="add-to-cart" data-product-id="{{ $product->id }}">Add to Cart</button>
+                @endif
 
                 <a href="" target="_blank" class="whatsapp-btn">
                     <i class="fa-brands fa-whatsapp"></i>
