@@ -29,9 +29,9 @@ Route::get('/category', function () {
 Route::get('/login', function () {
     return view('pages.login');
 });
-Route::get('/cart', function () {
-    return view('pages.cart');
-});
+// Route::get('/cart', function () {
+//     return view('pages.cart');
+// });
 
 Route::get('/cart', [CartController::class, 'show'])->name('cart');
 // Add to cart (via AJAX)

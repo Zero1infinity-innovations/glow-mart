@@ -761,82 +761,89 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // ============================================================================
 
-document.addEventListener("click", function(event) {
-    let target = event.target;
+$(document).on("click", ".add-to-cart", function () {
+    let button = $(this);
 
-    // अगर "Add to Cart" बटन पर क्लिक हुआ
-    if (target.classList.contains("add-to-cart") && !target.classList.contains("cart-controls-active")) {
+    // Agar already cart-controls-active hai to kuch mat karo
+    if (button.hasClass("cart-controls-active")) return;
 
-        let productId = target.getAttribute("data-product-id");
-        fetch("/add-cart", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                product_id: productId
-            })
-        })
-        .then(res => res.json())
-        .then(res => {
+    let productId = button.data("product-id");
+
+    $.ajax({
+        url: "{{ route('frontend.add-cart') }}",
+        method: "POST",
+        data: {
+            _token: $('meta[name="csrf-token"]').attr("content"),
+            product_id: productId,
+            quantity: 1
+        },
+        success: function (res) {
             if (res.success) {
-                target.innerHTML = `
-                    <button class="qty-btn decrease">-</button>
-                    <span class="cart-count">1</span>
-                    <button class="qty-btn increase">+</button>
-                `;
-                target.classList.add("cart-controls-active");
+                button
+                    .html(`
+                        <button class="qty-btn decrease">-</button>
+                        <span class="cart-count">1</span>
+                        <button class="qty-btn increase">+</button>
+                    `)
+                    .addClass("cart-controls-active")
+                    .attr("data-product-id", productId); // Reassign
             }
-        });
-    }
-
-    // "+" बटन पर क्लिक करने पर quantity बढ़ेगी
-    if (target.classList.contains("increase")) {
-        let countSpan = target.parentElement.querySelector(".cart-count");
-        let count = parseInt(countSpan.textContent);
-        countSpan.textContent = count + 1;
-
-        let productId = target.parentElement.getAttribute("data-product-id") || target.closest(".add-to-cart").getAttribute("data-product-id");
-
-        // Update quantity in DB
-        updateCart(productId, count + 1);
-    }
-
-    // "-" बटन पर क्लिक करने पर quantity घटेगी
-    if (target.classList.contains("decrease")) {
-        let countSpan = target.parentElement.querySelector(".cart-count");
-        let count = parseInt(countSpan.textContent);
-        let wrapper = target.parentElement;
-
-        let productId = wrapper.getAttribute("data-product-id") ||
-                        target.closest(".add-to-cart").getAttribute("data-product-id");
-
-        if (count > 1) {
-            countSpan.textContent = count - 1;
-            updateCart(productId, count - 1);
-        } else {
-            // Remove from cart (or set quantity = 0)
-            wrapper.innerHTML = `Add to Cart`;
-            wrapper.classList.remove("cart-controls-active");
-            updateCart(productId, 0); // 0 means remove
+        },
+        error: function (xhr) {
+            console.log("Add Error:", xhr.responseText);
         }
-    }
+    });
+});
 
-    function updateCart(productId, quantity) {
-        fetch("/update-cart", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                product_id: productId,
-                quantity: quantity
-            })
-        });
+// Increase Quantity
+$(document).on("click", ".increase", function () {
+    let wrapper = $(this).closest(".add-to-cart");
+    let productId = wrapper.data("product-id");
+    let countSpan = wrapper.find(".cart-count");
+    let count = parseInt(countSpan.text());
+
+    let newQty = count + 1;
+    countSpan.text(newQty);
+
+    updateCart(productId, newQty);
+});
+
+ // Decrease Quantity
+ $(document).on("click", ".decrease", function () {
+    let wrapper = $(this).closest(".add-to-cart");
+    let productId = wrapper.data("product-id");
+    let countSpan = wrapper.find(".cart-count");
+    let count = parseInt(countSpan.text());
+
+    if (count > 1) {
+        let newQty = count - 1;
+        countSpan.text(newQty);
+        updateCart(productId, newQty);
+    } else {
+        // Quantity = 0, remove UI & call delete
+        wrapper.html("Add to Cart").removeClass("cart-controls-active");
+        updateCart(productId, 0); // 0 = remove
     }
 });
+
+// Update quantity function
+function updateCart(productId, quantity) {
+    $.ajax({
+        url: "{{ route('frontend.update-cart') }}",
+        method: "POST",
+        data: {
+            _token: $('meta[name="csrf-token"]').attr("content"),
+            product_id: productId,
+            quantity: quantity
+        },
+        success: function (res) {
+            console.log("Updated", res);
+        },
+        error: function (xhr) {
+            console.log("Update Error:", xhr.responseText);
+        }
+    });
+}
 
 
 
