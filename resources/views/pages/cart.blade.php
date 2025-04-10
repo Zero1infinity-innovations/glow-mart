@@ -168,6 +168,14 @@
                     <button class="btn btn-success w-100" id="rzp-button"  data-amount="{{ $subtotal * 100 }}">Continue</button>
                 </div>
             </div>
+        @elseif (!Auth::check() || Auth::user()->role_id != 2)
+            <div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+                <div class="text-center">
+                    <div style="font-size: 80px;">🔐</div>
+                    <h4 class="fw-bold mt-3">You are not logged in</h4>
+                    <p class="text-muted">Please <a data-bs-toggle="modal" data-bs-target="#loginModal" class="btn btn-primary">login</a> to continue shopping.</p>
+                </div>
+            </div>
         @else
             <div class="d-flex justify-content-center align-items-center" style="min-height: 70vh;">
                 <div class="text-center">
@@ -262,9 +270,9 @@
                     });
                 },
                 "prefill": {
-                    "name": "{{ Auth::user()->name }}",
-                    "email": "{{ Auth::user()->email }}",
-                    "contact": "{{ Auth::user()->mobile }}"
+                    "name": "{{ Auth::check() ? Auth::user()->name : '' }}",
+                    "email": "{{ Auth::check() ? Auth::user()->email : '' }}",
+                    "contact": "{{ Auth::check() ? Auth::user()->mobile : '' }}"
                 },
                 "theme": {
                     "color": "#198754"
