@@ -48,14 +48,54 @@
         </ul>
     </li>
 
-    @endif
-    @if(Auth::user()->role_id == 3 )
-    <li>
-        <a href="{{ route('admin.shop.product.list') }}">
-            <div class="parent-icon"><i class='bx bxs-add-to-queue'></i></div>
-            <div class="menu-title">Product</div>
+    <li class="menu-item has-submenu">
+        <a href="{{ route('admin.orders.index') }}" class="">
+            <div class="parent-icon"><i class='bx bxs-package'></i></div>
+            <div class="menu-title">Orders</div>
         </a>
     </li>
+
+    {{-- ✅ INVENTORY MENU START --}}
+    <li class="menu-item has-submenu">
+        <a href="#">
+            <div class="parent-icon"><i class='bx bx-archive-in'></i></div>
+            <div class="menu-title">Inventory</div>
+        </a>
+        <ul class="submenu">
+            <li><a href="{{ route('admin.inventory.index') }}">Current Stock</a></li>
+            <li><a href="{{ route('admin.inventory.create') }}">Add Stock</a></li>
+            <li><a href="{{ route('admin.inventory.movements') }}">Stock Movement Logs</a></li>
+            <li><a href="{{ route('admin.inventory.lowstock') }}">Low Stock Report</a></li>
+        </ul>
+    </li>
+    {{-- ✅ INVENTORY MENU END --}}
+
+    @endif
+    @if(Auth::user()->role_id == 3 )
+        <li>
+            <a href="{{ route('admin.shop.product.list') }}">
+                <div class="parent-icon"><i class='bx bxs-add-to-queue'></i></div>
+                <div class="menu-title">Product</div>
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.shop.order.list') }}">
+                <div class="parent-icon"><i class='bx bxs-add-to-queue'></i></div>
+                <div class="menu-title">Order</div>
+            </a>
+        </li>
+        <li class="menu-item has-submenu">
+            <a href="#">
+                <div class="parent-icon"><i class='bx bx-archive-in'></i></div>
+                <div class="menu-title">Inventory</div>
+            </a>
+            <ul class="submenu">
+                <li><a href="{{ route('admin.inventory.index') }}">Current Stock</a></li>
+                <li><a href="{{ route('admin.inventory.create') }}">Add Stock</a></li>
+                <li><a href="{{ route('admin.inventory.movements') }}">Stock Movement Logs</a></li>
+                <li><a href="{{ route('admin.inventory.lowstock') }}">Low Stock Report</a></li>
+            </ul>
+        </li>
     @endif
 
 </ul>

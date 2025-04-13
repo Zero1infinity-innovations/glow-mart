@@ -29,6 +29,7 @@ Route::get('/login', function () {
 // });
 
 Route::get('/cart', [CartController::class, 'show'])->name('cart');
+Route::get('/get-address', [CartController::class, 'getShopAddress'])->name('getAddress');
 // Add to cart (via AJAX)
 Route::post('/add-cart', [CartController::class, 'add'])->name('add-cart');
 

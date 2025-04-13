@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\AssignProduct;
+use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
+
+use function PHPSTORM_META\type;
 
 class ShopLoginController extends Controller
 {
@@ -23,5 +26,19 @@ class ShopLoginController extends Controller
                     ->paginate(10);
 
         return view('admin.shop-login.productList', compact('productLists')); 
+    }
+
+    public function orderList(){
+        $shopId = auth()->user()->shop_id;
+        // dd(gettype($shopId));
+        
+        $orders = Order::where('shop_id', $shopId)->orderBy('created_at', 'desc')->paginate(10);
+
+        foreach ($orders as $order) {
+            $productIds = explode(',', $order->product_ids);
+            $products = Product::whereIn('id', $productIds)->pluck('product_name')->toArray();
+            $order->product_names = implode(', ', $products);
+        }
+        return view('admin.shop-login.orderList', compact('orders'));
     }
 }

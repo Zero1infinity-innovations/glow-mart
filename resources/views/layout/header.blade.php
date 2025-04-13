@@ -74,7 +74,14 @@
                         @endauth
                     </ul>
                 </div>
-                <a href="{{ route('frontend.cart') }}" class="btn px-2 d-none d-md-inline"><i class="bi bi-cart"></i></a>
+                <a href="{{ route('frontend.cart') }}" class="btn px-2 d-none d-md-inline position-relative">
+                    <i class="bi bi-cart"></i>
+                    @if ($count != 0)
+                        <span data-id="{{ $count }}" class="cart-badge badge rounded-pill bg-danger small-badge position-absolute top-0 start-100 translate-middle p-1" id="headerCartCount">
+                            {{ $count }}
+                        </span>
+                    @endif
+                </a>
                 <a href="#" class="btn px-2" style="color: rgb(14, 139, 14);"><i class="fab fa-whatsapp"></i></a>
             </div>
 

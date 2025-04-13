@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\inventories;
 use App\Models\SubCategory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class AddproductController extends Controller
@@ -14,6 +17,7 @@ class AddproductController extends Controller
 
     public function allProduct(Request $request)
     {
+        $userId = Auth::id();
         $category_id = $request->query('category_id');
         $subcategory_id = $request->query('subcategory_id');
         if (!empty($subcategory_id)) {
@@ -24,7 +28,12 @@ class AddproductController extends Controller
             $products = Product::orderBy('id', 'desc')->get();
         }
         $categories = Category::all();
-        return view('pages.all-product', compact('products', 'categories'));
+        $cartItems = [];
+        if (Auth::check()) {
+            $cartItems = Cart::where('user_id', Auth::id())->pluck('quantity', 'product_id')->toArray();
+        }
+        $count = Cart::where('user_id', $userId)->count();
+        return view('pages.all-product', compact('products', 'categories', 'cartItems', 'count'));
     }
 
     public function index()
@@ -94,6 +103,10 @@ class AddproductController extends Controller
         $product->description           = $request->description;
 
         if ($product->save()) {
+            inventories::create([
+                'product_id' => $product->id,
+                'quantity' => $request->quantity
+            ]);
             return redirect()->route('admin.product.index')->with('success', 'Product added successfully');
         } else {
             return back()->with('error', 'Failed to save product');
@@ -153,6 +166,10 @@ class AddproductController extends Controller
         $product->description       = $request->description;
 
         if ($product->save()) {
+            inventories::create([
+                'product_id' => $id,
+                'quantity' => $request->quantity
+            ]);
             return redirect()->route('admin.product.index')->with('success', 'Product updated successfully');
         } else {
             return back()->with('error', 'Failed to update product');

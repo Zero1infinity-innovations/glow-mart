@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class HomeController extends Controller
 {
     public function index(){
+        $userId = Auth::id();
         $products = Product::orderBy('id', 'desc')->get();
         $categories  = Category::with(['subcategories' => function ($query) {
             $query->where('sub_menu_item', 1);
@@ -21,7 +22,8 @@ class HomeController extends Controller
         if (Auth::check()) {
             $cartItems = Cart::where('user_id', Auth::id())->pluck('quantity', 'product_id')->toArray();
         }
+        $count = Cart::where('user_id', $userId)->count();
 
-        return view('pages.home', compact('products','categories', 'cartItems'));
+        return view('pages.home', compact('products','categories', 'cartItems', 'count'));
     }
 }

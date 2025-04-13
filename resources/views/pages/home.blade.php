@@ -612,7 +612,6 @@ $browserCategories = [
             </div>
             <div class="product-weight">{{ $product->quantity }} Gm</div>
             <div class="buttons">
-                {{-- <button class="add-to-cart"  data-product-id="{{ $product->id }}">Add to Cart</button> --}}
                 @if(isset($cartItems[$product->id]))
                     <div class="add-to-cart cart-controls-active" data-product-id="{{ $product->id }}">
                         <button class="qty-btn decrease">-</button>
@@ -813,6 +812,7 @@ $(document).on("click", ".add-to-cart", function () {
                     `)
                     .addClass("cart-controls-active")
                     .attr("data-product-id", productId); // Reassign
+                    updateCartCountUI(res.cartCount);
             }
         },
         error: function (xhr) {
@@ -840,20 +840,20 @@ $(document).on("click", ".increase", function () {
     let productId = wrapper.data("product-id");
     let countSpan = wrapper.find(".cart-count");
     let count = parseInt(countSpan.text());
-
+    let cartCount = $('#headerCartCount').data('id');
     if (count > 1) {
         let newQty = count - 1;
         countSpan.text(newQty);
         updateCart(productId, newQty);
     } else {
         // Quantity = 0, remove UI & call delete
-        wrapper.html("Add to Cart").removeClass("cart-controls-active");
-        updateCart(productId, 0); // 0 = remove
+        updateCart(productId, 0, wrapper);
+        updateCartCountUI(cartCount);
     }
 });
 
 // Update quantity function
-function updateCart(productId, quantity) {
+function updateCart(productId, quantity, wrapper = null) {
     $.ajax({
         url: "{{ route('frontend.update-cart') }}",
         method: "POST",
@@ -863,12 +863,19 @@ function updateCart(productId, quantity) {
             quantity: quantity
         },
         success: function (res) {
+            if (quantity === 0 && wrapper) {
+                wrapper.replaceWith(`<button class="add-to-cart" data-product-id="${productId}">Add to Cart</button>`);
+            }
             console.log("Updated", res);
         },
         error: function (xhr) {
             console.log("Update Error:", xhr.responseText);
         }
     });
+}
+
+function updateCartCountUI(count) {
+    $(".cart-badge").text(count);
 }
 
 

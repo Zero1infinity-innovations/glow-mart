@@ -12,6 +12,7 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 use App\Http\Requests\Admin\Product\CreateRequest;
+use App\Models\inventories;
 
 class ProductController extends Controller
 {

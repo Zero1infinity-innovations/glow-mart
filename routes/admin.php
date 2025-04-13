@@ -8,7 +8,11 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\Auth\AuthController;
-
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\DashBoardController;
+use App\Http\Controllers\Admin\EmailSettingController;
+use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\OrderController;
 
 // Before Login Route Start
 Route::namespace('Auth')->controller(AuthController::class)->middleware(['guest'])->group(function(){
@@ -74,10 +78,28 @@ Route::middleware(['auth'])->group(function() {
         Route::delete('sub-category/{id}', [SubCategoryController::class, 'destroySubCategory'])->name('sub-category.destroy');
     });
 
+    Route::prefix('orders')->group(function () {
+        Route::get('/', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('show-order/{id}', [OrderController::class, 'show'])->name('order.show');
+        Route::post('order/{id}/status', [OrderController::class, 'updateStatus'])->name('order.updateStatus');
+        Route::get('order/{id}/invoice', [OrderController::class, 'generateInvoice'])->name('order.invoice');
+    });
+
+    // inventory
+    Route::prefix('inventory')->group(function () {
+        Route::get('/', [InventoryController::class, 'index'])->name('inventory.index');
+        Route::get('/create', [InventoryController::class, 'create'])->name('inventory.create');
+        Route::post('/store', [InventoryController::class, 'storeInventory'])->name('inventory.store');
+        Route::get('/movements', [InventoryController::class, 'stockMovements'])->name('inventory.movements');
+        Route::get('/lowstock', [InventoryController::class, 'lowStock'])->name('inventory.lowstock');
+        Route::get('/edit', [InventoryController::class, 'edit'])->name('inventory.edit');
+    });
+
     // shop login
     Route::prefix('shop')->group(function () {
         Route::get('/', [ShopLoginController::class, 'dashboard'])->name('shop.dashboard');
         Route::get('product-list', [ShopLoginController::class, 'productList'])->name('shop.product.list');
+        Route::get('order-list', [ShopLoginController::class, 'orderList'])->name('shop.order.list');
     });
     
     
