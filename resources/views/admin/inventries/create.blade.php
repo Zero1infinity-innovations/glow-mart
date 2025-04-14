@@ -38,6 +38,9 @@
                 <br />
                 <label>Quantity</label>
                 <input type="text" name="qty" id="qty-input" class="form-control" readonly /><br />
+                <label> Select Shop(s) </label>
+                <select name="shop_ids[]" class="form-control" id="shop-select" multiple>
+                </select><br />
 
                 <input type="submit" class="btn btn-primary btn-sm" value="Submit">
             </form>
@@ -51,6 +54,38 @@
             const selectedOption = this.options[this.selectedIndex];
             const qty = selectedOption.getAttribute('data-qty') || 0;
             document.getElementById('qty-input').value = qty;
+
+            // ✅ Shops fetch using AJAX
+            const productId = this.value;
+
+            if (productId) {
+                // Clear previous shop options
+                const shopSelect = document.getElementById('shop-select');
+                shopSelect.innerHTML = '';
+
+                $.ajax({
+                    url: '{{ route('admin.inventory.getShop') }}',
+                    type: 'GET',
+                    data: {
+                        product_id: productId
+                    },
+                    success: function(response) {
+                        // Add new shops based on the selected product
+                        response.forEach(shop => {
+                            const option = document.createElement('option');
+                            option.value = shop.id;
+                            option.text = shop.shop_name;
+                            shopSelect.appendChild(option);
+                        });
+                    },
+                    error: function() {
+                        alert('Shop list load karne me dikkat aayi.');
+                    }
+                });
+            } else {
+                // If no product is selected, reset shop select options
+                document.getElementById('shop-select').innerHTML = '<option value="">Select Shop</option>';
+            }
         });
     </script>
 @endpush

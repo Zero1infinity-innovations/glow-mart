@@ -30,7 +30,12 @@
             <div class="menu-title">Product</div>
         </a>
     </li>
-
+    <li>
+        <a href="{{route('admin.users.index')}}">
+            <div class="parent-icon"><i class='bx bxs-customize'></i></div>
+            <div class="menu-title">Users</div>
+        </a>
+    </li>
     <li>
         <a href="{{ route('admin.shops.index') }}">
             <div class="parent-icon"><i class='bx bxs-add-to-queue'></i></div>
@@ -65,7 +70,7 @@
             <li><a href="{{ route('admin.inventory.index') }}">Current Stock</a></li>
             <li><a href="{{ route('admin.inventory.create') }}">Add Stock</a></li>
             <li><a href="{{ route('admin.inventory.movements') }}">Stock Movement Logs</a></li>
-            <li><a href="{{ route('admin.inventory.lowstock') }}">Low Stock Report</a></li>
+            {{-- <li><a href="{{ route('admin.inventory.lowstock') }}">Low Stock Report</a></li> --}}
         </ul>
     </li>
     {{-- ✅ INVENTORY MENU END --}}
@@ -76,6 +81,12 @@
             <a href="{{ route('admin.shop.product.list') }}">
                 <div class="parent-icon"><i class='bx bxs-add-to-queue'></i></div>
                 <div class="menu-title">Product</div>
+            </a>
+        </li>
+        <li>
+            <a href="{{route('admin.shop.users.index')}}">
+                <div class="parent-icon"><i class='bx bxs-customize'></i></div>
+                <div class="menu-title">Users</div>
             </a>
         </li>
         <li>
@@ -90,10 +101,9 @@
                 <div class="menu-title">Inventory</div>
             </a>
             <ul class="submenu">
-                <li><a href="{{ route('admin.inventory.index') }}">Current Stock</a></li>
-                <li><a href="{{ route('admin.inventory.create') }}">Add Stock</a></li>
-                <li><a href="{{ route('admin.inventory.movements') }}">Stock Movement Logs</a></li>
-                <li><a href="{{ route('admin.inventory.lowstock') }}">Low Stock Report</a></li>
+                <li><a href="{{ route('admin.shop.inventory.index') }}">Current Stock</a></li>
+                <li><a href="{{ route('admin.shop.inventory.movements') }}">Stock Movement Logs</a></li>
+                {{-- <li><a href="{{ route('admin.shop.inventory.lowstock') }}">Low Stock Report</a></li> --}}
             </ul>
         </li>
     @endif

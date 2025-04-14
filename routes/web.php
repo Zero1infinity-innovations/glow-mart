@@ -65,6 +65,6 @@ Route::post('/profile/change-password', [ProfileController::class, 'changePasswo
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Shop Module
-Route::get('/get-shops/{pincode}', [ShopController::class, 'getShopsByPincode']);
+Route::get('/get-shops/{pincode}', [ShopController::class, 'getShopsByPincode'])->name('getShop');
 Route::get('/get-subcategories', [AddproductController::class, 'getSubcategories']);
 

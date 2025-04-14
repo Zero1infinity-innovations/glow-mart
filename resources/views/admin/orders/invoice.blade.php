@@ -9,14 +9,16 @@
             font-family: DejaVu Sans, sans-serif;
             margin: 0;
             padding: 0;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .invoice-box {
-            max-width: 800px;
+            max-width: 280px;
+            /* approx. 3 inches (80mm = 3.15 inches) */
             margin: auto;
-            padding: 30px;
-            border: 1px solid #eee;
+            padding: 10px;
+            border: none;
+            /* optional: remove border for thermal printers */
             color: #000;
         }
 
@@ -26,71 +28,78 @@
 
         .header {
             text-align: center;
-            line-height: 1.5;
-            margin-bottom: 20px;
+            line-height: 1.3;
+            margin-bottom: 10px;
         }
 
         .header h2 {
-            margin-bottom: 5px;
+            font-size: 16px;
+            margin-bottom: 2px;
         }
 
         .header small {
+            font-size: 10px;
             display: block;
-            font-size: 13px;
         }
 
         .invoice-info {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            width: 100%;
+            font-size: 11px;
         }
 
         .invoice-info td {
-            padding: 3px 5px;
+            padding: 2px 0;
             vertical-align: top;
         }
 
         .table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .table th,
         .table td {
-            border: 1px solid #ddd;
-            padding: 6px;
+            border: 1px dashed #ddd;
+            padding: 3px;
+            font-size: 11px;
             text-align: center;
         }
 
         .table th {
-            background: #eee;
+            background: #f0f0f0;
         }
 
         .totals {
             width: 100%;
-            margin-top: 20px;
+            margin-top: 10px;
+            font-size: 11px;
         }
 
         .totals td {
-            padding: 5px;
+            padding: 2px;
         }
 
         .signature {
-            margin-top: 50px;
-            float: right;
-            text-align: center;
-        }
-
-        .terms {
-            margin-top: 60px;
-            font-size: 12px;
+            margin-top: 20px;
+            text-align: right;
+            font-size: 11px;
         }
 
         .footer-note {
-            margin-top: 30px;
+            margin-top: 15px;
             font-weight: bold;
             text-align: center;
+            font-size: 11px;
+        }
+
+        .terms {
+            margin-top: 10px;
+            font-size: 10px;
         }
     </style>
+
 </head>
 
 <body>

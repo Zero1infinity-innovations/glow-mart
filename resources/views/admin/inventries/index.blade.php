@@ -15,9 +15,11 @@
             <h6 class="mb-0 text-uppercase">Add Stock</h6>
         </div>
         <div class="col-6 text-end px-0 px-lg-3">
-            <a href="{{ route('admin.inventory.create') }}" class="btn btn-primary btn-sm px-3">
-                <i class='bx bx-plus'></i> Add
-            </a>
+            @if (Auth::user()->role_id != 3)
+                <a href="{{ route('admin.inventory.create') }}" class="btn btn-primary btn-sm px-3">
+                    <i class='bx bx-plus'></i> Add
+                </a>
+            @endif
         </div>
     </div>
     <hr />

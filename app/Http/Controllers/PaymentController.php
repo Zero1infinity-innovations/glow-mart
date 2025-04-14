@@ -103,6 +103,7 @@ class PaymentController extends Controller
                     $inventory->save();
 
                     StockMovement::create([
+                        'order_number' => $order->id,
                         'product_id' => $item->product_id,
                         'type' => 'OUT',
                         'quantity' => $item->quantity,

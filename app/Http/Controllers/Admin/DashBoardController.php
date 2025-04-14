@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class DashBoardController extends Controller
@@ -18,5 +19,16 @@ class DashBoardController extends Controller
         request()->session()->regenerateToken();
         return redirect()->route('admin.login')->with('success',"You're account has been logout");
 
+    }
+
+    public function getUserDetails(){
+        if (Auth::check() && Auth::user()->role_id == 3) {
+            $data = User::where('role_id', 2)
+                        ->where('shop_id', Auth::user()->shop_id)
+                        ->get();
+        } else {
+            $data = User::where('role_id', 2)->get();
+        }
+        return view('admin.users.index', compact('data'));
     }
 }

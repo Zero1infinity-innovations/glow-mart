@@ -35,22 +35,24 @@
 
     /* Product Listing */
     .product-list {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        /* 4 Cards Per Row */
+        display: flex;
+        flex-wrap: wrap;
+        /* Ensures products wrap to the next line */
         gap: 20px;
         margin-left: 20px;
         width: 100%;
     }
 
     .product-card {
+        width: calc(25% - 20px);
+        /* 4 Products per row */
         background: white;
-        /* padding: 10px; */
         border-radius: 10px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         text-align: center;
         position: relative;
         height: 380px;
+        margin-bottom: 20px;
     }
 
     .product-card img {
@@ -59,7 +61,7 @@
     }
 
     .discount {
-        background: 007bff;
+        background: #007bff;
         color: white;
         padding: 5px;
         position: absolute;
@@ -68,37 +70,62 @@
         font-size: 12px;
     }
 
-    /*
-.cart-btn {
-    background: blue;
-    color: white;
-    border: none;
-    padding: 5px;
-    width: 100%;
-    cursor: pointer;
-} */
+    .buttons {
+        margin-top: 15px;
+    }
 
-    /* .whatsapp-btn {
-    background: green;
-    color: white;
-    border: none;
-    padding: 5px;
-    width: 100%;
-    cursor: pointer;
-} */
+    .add-to-cart {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .whatsapp-btn {
+        background: #25d366;
+        color: white;
+        border: none;
+        padding: 10px;
+        width: 100%;
+        cursor: pointer;
+        display: block;
+        margin-top: 10px;
+    }
+
+    .cart-controls-active {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .qty-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 18px;
+    }
+
+    .cart-count {
+        margin: 0 10px;
+        font-size: 16px;
+    }
 
     /* Responsive Design */
     @media (max-width: 1024px) {
-        .product-list {
-            grid-template-columns: repeat(2, 1fr);
-            /* 2 Cards Per Row on Tablets */
+        .product-card {
+            width: calc(50% - 20px);
+            /* 2 Products per row */
         }
     }
 
     @media (max-width: 600px) {
-        .product-list {
-            grid-template-columns: repeat(1, 1fr);
-            /* 1 Card Per Row on Mobile */
+        .product-card {
+            width: calc(100% - 20px);
+            /* 1 Product per row */
         }
     }
 
@@ -150,11 +177,6 @@
     }
 
     @media (max-width: 768px) {
-        /* .navbar {
-        display: block;
-        text-align: center;
-      } */
-
         .breadcrumb {
             text-align: center;
         }
@@ -172,7 +194,9 @@
 
 @section('bodyContent')
 
-
+    <script>
+        const isUserLoggedIn = @json(Auth::check() && Auth::user()->role_id == 2);
+    </script>
     <div class="container-fluid">
         <!-- Sidebar Filters -->
         <aside class="filters">
@@ -245,7 +269,6 @@
                                 @endif
                             </div>
                             <div class="product-image">
-
                                 <a href="">
                                     <img src="{{ asset($product->product_image) }}" alt="{{ $product->product_name }}">
                                 </a>
@@ -266,7 +289,7 @@
                                 @else
                                     <button class="add-to-cart" data-product-id="{{ $product->id }}">Add to Cart</button>
                                 @endif
-
+            
                                 <a href="" target="_blank" class="whatsapp-btn">
                                     <i class="fa-brands fa-whatsapp"></i>
                                 </a>
@@ -278,9 +301,8 @@
                         <h3>No products available at the moment.</h3>
                     </div>
                 @endif
-
-
             </section>
+            
 
         </div>
     </div>
@@ -291,7 +313,10 @@
     <script>
         $(document).on("click", ".add-to-cart", function() {
             let button = $(this);
-
+            if (!isUserLoggedIn) {
+                alert("Please login to add products to cart.");
+                return;
+            }
             // Agar already cart-controls-active hai to kuch mat karo
             if (button.hasClass("cart-controls-active")) return;
 
@@ -315,7 +340,7 @@
                     `)
                             .addClass("cart-controls-active")
                             .attr("data-product-id", productId); // Reassign
-                            updateCartCountUI(res.cartCount);
+                        updateCartCountUI(res.cartCount);
                     }
                 },
                 error: function(xhr) {
@@ -370,7 +395,7 @@
                     if (quantity === 0 && wrapper) {
                         wrapper.replaceWith(
                             `<button class="add-to-cart" data-product-id="${productId}">Add to Cart</button>`
-                            );
+                        );
                     }
                     console.log("Updated", res);
                 },
@@ -379,6 +404,7 @@
                 }
             });
         }
+
         function updateCartCountUI(count) {
             $(".cart-badge").text(count);
         }

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\DashBoardController;
 use App\Http\Controllers\Admin\EmailSettingController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Models\Inventory;
 
 // Before Login Route Start
 Route::namespace('Auth')->controller(AuthController::class)->middleware(['guest'])->group(function(){
@@ -87,19 +88,36 @@ Route::middleware(['auth'])->group(function() {
 
     // inventory
     Route::prefix('inventory')->group(function () {
-        Route::get('/', [InventoryController::class, 'index'])->name('inventory.index');
+        Route::get('/current-stock', [InventoryController::class, 'index'])->name('inventory.index');
         Route::get('/create', [InventoryController::class, 'create'])->name('inventory.create');
+        Route::get('/get-shops', [InventoryController::class, 'getShopsByProduct'])->name('inventory.getShop');
         Route::post('/store', [InventoryController::class, 'storeInventory'])->name('inventory.store');
         Route::get('/movements', [InventoryController::class, 'stockMovements'])->name('inventory.movements');
         Route::get('/lowstock', [InventoryController::class, 'lowStock'])->name('inventory.lowstock');
         Route::get('/edit', [InventoryController::class, 'edit'])->name('inventory.edit');
     });
 
+    Route::prefix('users')->group(function () {
+        Route::get('/user-details', [DashBoardController::class, 'getUserDetails'])->name('users.index');
+    });
+
+    Route::prefix('shop/inventory')->name('shop.inventory.')->group(function () {
+        // Route::get('/', [InventoryController::class, 'index'])->name('index');
+        Route::get('/create', [InventoryController::class, 'create'])->name('create');
+        Route::post('/store', [InventoryController::class, 'storeInventory'])->name('store');
+        Route::get('/movements', [InventoryController::class, 'stockMovements'])->name('movements');
+        Route::get('/lowstock', [InventoryController::class, 'lowStock'])->name('lowstock');
+        Route::get('/edit', [InventoryController::class, 'edit'])->name('edit');
+    });
+    
+
     // shop login
     Route::prefix('shop')->group(function () {
         Route::get('/', [ShopLoginController::class, 'dashboard'])->name('shop.dashboard');
         Route::get('product-list', [ShopLoginController::class, 'productList'])->name('shop.product.list');
         Route::get('order-list', [ShopLoginController::class, 'orderList'])->name('shop.order.list');
+        Route::get('/current-stock', [InventoryController::class, 'index'])->name('shop.inventory.index');
+        Route::get('/user-details', [DashBoardController::class, 'getUserDetails'])->name('shop.users.index');
     });
     
     

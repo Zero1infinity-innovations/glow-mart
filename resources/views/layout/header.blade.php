@@ -1,8 +1,8 @@
 <header class="sticky-top">
     @if (Request::is('/'))
-    <div class="announcement text-center py-1" style="  position: relative">
-        <p>BEST PRICE IN CITY, SAME DAY FREE HOME DELIVERY SERVICE, Refer & Earn per Member ₹50 Coupon.</p>
-    </div>
+        <div class="announcement text-center py-1" style="  position: relative">
+            <p>BEST PRICE IN CITY, SAME DAY FREE HOME DELIVERY SERVICE, Refer & Earn per Member ₹50 Coupon.</p>
+        </div>
     @endif
 
     <!-- Top Bar -->
@@ -10,7 +10,7 @@
         <div class="container d-flex justify-content-between align-items-center">
             <!-- Logo -->
             <a href="#" class="d-flex align-items-center text-decoration-none">
-                <img src="{{asset('/theme/images/GLOWMARTlogo.png')}}" class="logo" alt="Glowmart Logo">
+                <img src="{{ asset('/theme/images/GLOWMARTlogo.png') }}" class="logo" alt="Glowmart Logo">
                 <div class="ms-2">
                     <h5 class="mb-0">GLOWMART</h5>
                     <p class="text-muted mb-0 small">एक कदम सपनों से हकीकत की ओर</p>
@@ -45,39 +45,42 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         @auth
-                        @if(Auth::user()->role_id == 2)
-                        <!-- If user has role_id = 2 (User) -->
-                        <li>
-                            <a class="dropdown-item" href="/profile" style="font-size: 18px;">My Profile</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="/change-password" style="font-size: 18px;">Change
-                                Password</a>
-                        </li>
-                        <li>
-                            <form action="/logout" method="POST">
-                                @csrf
-                                <button type="submit" class="dropdown-item" style="font-size: 18px;">Logout</button>
-                            </form>
-                        </li>
-                        @endif
+                            @if (Auth::user()->role_id == 2)
+                                <!-- If user has role_id = 2 (User) -->
+                                <li>
+                                    <a class="dropdown-item" href="/profile" style="font-size: 18px;">My Profile</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="/change-password" style="font-size: 18px;">Change
+                                        Password</a>
+                                </li>
+                                <li>
+                                    <form action="/logout" method="POST">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item"
+                                            style="font-size: 18px;">Logout</button>
+                                    </form>
+                                </li>
+                            @endif
                         @else
-                        <!-- If user is NOT logged in -->
-                        <li>
-                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#loginModal"
-                                style="font-size: 18px;">Login</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#registerModal"
-                                style="font-size: 18px;">Register</a>
-                        </li>
+                            <!-- If user is NOT logged in -->
+                            <li>
+                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#loginModal"
+                                    style="font-size: 18px;">Login</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#registerModal"
+                                    style="font-size: 18px;">Register</a>
+                            </li>
                         @endauth
                     </ul>
                 </div>
                 <a href="{{ route('frontend.cart') }}" class="btn px-2 d-none d-md-inline position-relative">
                     <i class="bi bi-cart"></i>
                     @if ($count != 0)
-                        <span data-id="{{ $count }}" class="cart-badge badge rounded-pill bg-danger small-badge position-absolute top-0 start-100 translate-middle p-1" id="headerCartCount">
+                        <span data-id="{{ $count }}"
+                            class="cart-badge badge rounded-pill bg-danger small-badge position-absolute top-0 start-100 translate-middle p-1"
+                            id="headerCartCount">
                             {{ $count }}
                         </span>
                     @endif
@@ -156,35 +159,36 @@
                     </li> -->
 
                     @foreach ($categories as $category)
-                    @if ($category->subcategories->count())
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            {{ $category->category_name }}
-                        </a>
-                        <ul class="dropdown-menu">
-                            @foreach ($category->subcategories as $sub)
-                            <li>
-                                <a href="/all-product?subcategory_id={{ $sub->id }}" class="dropdown-item">
-                                    {{ $sub->subcate_name }}
+                        @if ($category->subcategories->count())
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                    {{ $category->category_name }}
+                                </a>
+                                <ul class="dropdown-menu">
+                                    @foreach ($category->subcategories as $sub)
+                                        <li>
+                                            <a href="/all-product?subcategory_id={{ $sub->id }}"
+                                                class="dropdown-item">
+                                                {{ $sub->subcate_name }}
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        @else
+                            <li class="nav-item">
+                                <a href="/all-product?category_id={{ $category->id }}" class="nav-link">
+                                    {{ $category->category_name }}
                                 </a>
                             </li>
-                            @endforeach
-                        </ul>
-                    </li>
-                    @else
-                    <li class="nav-item">
-                        <a href="/all-product?category_id={{ $category->id }}" class="nav-link">
-                            {{ $category->category_name }}
-                        </a>
-                    </li>
-                    @endif
+                        @endif
                     @endforeach
 
 
-                    <!--                    
+                    <!--
                     @foreach ($categories as $category)
-                        <li class="nav-item"><a href="/all-product?category_id={{$category->id}}" class="nav-link">{{ $category->category_name }}</a></li>
-                    @endforeach -->
+<li class="nav-item"><a href="/all-product?category_id={{ $category->id }}" class="nav-link">{{ $category->category_name }}</a></li>
+@endforeach -->
 
 
 
@@ -203,3 +207,152 @@
         </div>
     </nav>
 </header>
+<!-- Login And Register Module Start -->
+
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Register</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="registerForm">
+                    @csrf
+                    <input type="text" name="name" placeholder="Name" class="form-control mb-2" required>
+                    <input type="email" name="email" placeholder="Email" class="form-control mb-2" required>
+                    <input type="text" name="mobile" placeholder="Mobile Number" class="form-control mb-2"
+                        required>
+                    <input type="password" name="password" placeholder="Password" class="form-control mb-2"
+                        required>
+                    <input type="text" id="pincode" name="pincode" placeholder="Enter Pincode"
+                        class="form-control mb-2" required>
+
+                    <select name="shop_id" id="shopSelect" class="form-control mb-2">
+                        <option value="">Select Shop</option>
+                    </select>
+                    <button type="submit" class="btn btn-success">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    @csrf
+                    <input type="text" name="login" placeholder="Email or Mobile" class="form-control mb-2"
+                        required>
+                    <input type="password" name="password" placeholder="Password" class="form-control mb-2"
+                        required>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section('scriptJs')
+    <script>
+        $(document).ready(function() {
+            $('#pincode').on('input', function() {
+                let pincode = $(this).val();
+                let url = window.location.origin + "/login",
+
+                if (pincode.length === 6) { // Ensure valid pincode length
+                    $.ajax({
+                        url: `/get-shops/${pincode}`,
+                        type: 'GET',
+                        success: function(response) {
+                            $('#shopSelect').empty().append(
+                                '<option value="">Select Shop</option>');
+                            $.each(response, function(index, shop) {
+                                $('#shopSelect').append(
+                                    `<option value="${shop.id}">${shop.shop_name}</option>`
+                                );
+                            });
+                        },
+                        error: function() {
+                            $('#shopSelect').empty().append(
+                                '<option value="">No Shops Found</option>');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Register User
+            $("#registerForm").submit(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "/register",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        Swal.fire({
+                            title: "Registration Successful!",
+                            text: response.message,
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then(() => {
+                            location.reload();
+                            // $("#registerModal").modal("hide"); // Hide modal after success
+                            // $("#registerForm")[0].reset(); // Clear form
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: "Error!",
+                            text: xhr.responseJSON.message || "Something went wrong!",
+                            icon: "error",
+                            confirmButtonText: "OK"
+                        });
+                    }
+                });
+            });
+
+            // Login User
+            $("#loginForm").submit(function(e) {
+                let url = window.location.origin + "/login",
+                console.log(url);
+                e.preventDefault();
+                $.ajax({
+                    url: "/login",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        window.location.reload();
+                    },
+                    error: function(xhr) {
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            });
+
+            $("#logoutForm").submit(function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "/logout",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        window.location.reload();
+                    },
+                    error: function(xhr) {
+                        alert(xhr.responseJSON.message);
+                    }
+                });
+            });
+        });
+    </script>
+@endsection

@@ -26,28 +26,25 @@
             <div class="table-responsive">
                 <table class="table table-striped table-hover table-bordered no-footer">
                     <thead class="table-light">
-                        <tr id="thead-html">
-                            <th>S no.</th>
+                        <tr>
+                            <th>S No.</th>
                             <th>Product Name</th>
+                            <th>Order Number</th>
                             <th>Quantity</th>
-                            <th>Date</th>
-                            <th>Action</th>
+                            <th>Type</th>
+                            <th>Reason</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @php
-                            $sn = 1;
-                        @endphp
+                        @php $sn = 1; @endphp
                         @foreach ($data as $item)
                             <tr>
                                 <td>{{ $sn++ }}</td>
-                                <td>{{ $item->product->product_name }}</td>
+                                <td>{{ $item->product_name ?? 'N/A' }}</td>
+                                <td>{{ $item->order_number ?? 'N/A' }}</td>
                                 <td>{{ $item->quantity }}</td>
-                                <td>{{ $item->created_at->format('d M Y') }}</td>
-                                <td>
-                                    <a href="{{ route('admin.inventory.edit', $item->id) }}"
-                                        class="btn btn-sm btn-warning">Edit</a>
-                                </td>
+                                <td>{{ ucwords($item->type) }}</td>
+                                <td>{{ $item->reason ?? '-' }}</td>
                             </tr>
                         @endforeach
                     </tbody>
