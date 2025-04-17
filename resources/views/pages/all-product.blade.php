@@ -268,12 +268,15 @@
                                     off
                                 @endif
                             </div>
-                            <div class="product-image">
-                                <a href="">
+                            <<div class="product-image">
+
+                                <a href="{{ route('frontend.product-details', ['id' => $product->id]) }}">
                                     <img src="{{ asset($product->product_image) }}" alt="{{ $product->product_name }}">
                                 </a>
                             </div>
-                            <div class="product-name">{{ $product->product_name }}</div>
+                            <a href="{{ route('frontend.product-details', ['id' => $product->id]) }}" style="text-decoration: none;">
+                                <div class="product-name">{{ $product->product_name }}</div>
+                            </a>
                             <div class="product-price">
                                 &#8377;{{ $product->sale_price }}
                                 <span class="old-price">&#8377;{{ $product->mrp_price }}</span>

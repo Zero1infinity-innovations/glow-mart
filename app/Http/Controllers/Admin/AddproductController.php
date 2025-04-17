@@ -8,9 +8,13 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\inventories;
+use App\Models\Inventory;
 use App\Models\SubCategory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+
+use const Adminer\DB;
 
 class AddproductController extends Controller
 {
@@ -20,12 +24,34 @@ class AddproductController extends Controller
         $userId = Auth::id();
         $category_id = $request->query('category_id');
         $subcategory_id = $request->query('subcategory_id');
-        if (!empty($subcategory_id)) {
-            $products = Product::where('subCategory', $subcategory_id)->get();
-        } elseif (!empty($category_id)) {
-            $products = Product::where('category', $category_id)->get();
-        } else {
-            $products = Product::orderBy('id', 'desc')->get();
+        if (Auth::check() && Auth::user()->role_id == 2) {
+            $shop_id = Auth::user()->shop_id;
+        
+            $assignedProductIds = DB::table('assign_products')
+                ->where('shop_id', $shop_id)
+                ->pluck('product_id');
+        
+            if (!empty($subcategory_id)) {
+                $products = Product::where('subCategory', $subcategory_id)
+                    ->whereIn('id', $assignedProductIds)
+                    ->get();
+            } elseif (!empty($category_id)) {
+                $products = Product::where('category', $category_id)
+                    ->whereIn('id', $assignedProductIds)
+                    ->get();
+            } else {
+                $products = Product::whereIn('id', $assignedProductIds)
+                    ->orderBy('id', 'desc')
+                    ->get();
+            }
+        }else{
+            if (!empty($subcategory_id)) {
+                $products = Product::where('subCategory', $subcategory_id)->get();
+            } elseif (!empty($category_id)) {
+                $products = Product::where('category', $category_id)->get();
+            } else {
+                $products = Product::orderBy('id', 'desc')->get();
+            }
         }
         $categories = Category::all();
         $cartItems = [];
@@ -103,7 +129,7 @@ class AddproductController extends Controller
         $product->description           = $request->description;
 
         if ($product->save()) {
-            inventories::create([
+            Inventory::create([
                 'product_id' => $product->id,
                 'quantity' => $request->quantity
             ]);
@@ -166,7 +192,7 @@ class AddproductController extends Controller
         $product->description       = $request->description;
 
         if ($product->save()) {
-            inventories::create([
+            Inventory::create([
                 'product_id' => $id,
                 'quantity' => $request->quantity
             ]);

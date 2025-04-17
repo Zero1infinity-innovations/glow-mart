@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ShopController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\WishlistController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -57,6 +58,8 @@ Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::match(['get','post'], 'login', [AuthController::class, 'login'])->name('login');
 
 Route::get('/all-product', [AddproductController::class, 'allProduct'])->name('all-product');
+Route::get('/product-details/{id}', [HomeController::class, 'ProductDetail'])->name('product-details');
+Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist');
 
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
