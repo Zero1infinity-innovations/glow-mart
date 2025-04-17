@@ -54,7 +54,7 @@ Route::get('/user', function () {
 });
 
 Route::post('/register', [AuthController::class, 'register'])->name('register');
-Route::post('login', [AuthController::class, 'login'])->name('login');
+Route::match(['get','post'], 'login', [AuthController::class, 'login'])->name('login');
 
 Route::get('/all-product', [AddproductController::class, 'allProduct'])->name('all-product');
 

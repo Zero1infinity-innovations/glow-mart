@@ -44,16 +44,16 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->login)
-            ->orWhere('mobile', $request->login)
-            ->first();
+        $user = User::where(function($query) use ($request) {
+            $query->where('email', $request->login)->orWhere('mobile', $request->login);
+        })->where('role_id', 2)->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
             Auth::login($user);
             return response()->json(['message' => 'Login successful'], 200);
         }
 
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        return response()->json(['message' => 'Invalid credentials for user'], 401);
     }
 
     // Logout User

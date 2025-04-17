@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
+use App\Models\Category;
+use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -11,7 +14,12 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        return view('userlogin.profile', ['user' => Auth::user()]);
+        $user_id = Auth::id();
+        $categories = Category::all();
+        $user = Auth::user();
+        $shop = Shop::where('id', Auth::user()->shop_id)->first();
+        $count = Cart::where('user_id', $user_id)->count();
+        return view('userlogin.profile', compact('user', 'shop', 'count', 'categories'));
     }
 
     public function changePasswordView()
@@ -23,6 +31,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
+        // Validation
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
@@ -34,25 +43,32 @@ class ProfileController extends Controller
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // Ensure directory exists
         $profileImagePath = public_path('uploads/profile_images');
         if (!file_exists($profileImagePath)) {
-            mkdir($profileImagePath, 0777, true); // Create directory with full permissions
+            mkdir($profileImagePath, 0777, true);
         }
 
+        // Handle profile image
         if ($request->hasFile('profile_image')) {
             $image = $request->file('profile_image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/profile_images'), $imageName);
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move($profileImagePath, $imageName);
 
-            // Delete Old Profile Image
-            if ($user->profile_image && file_exists(public_path('uploads/profile_images/' . $user->profile_image))) {
-                unlink(public_path('uploads/profile_images/' . $user->profile_image));
+            // Delete old image if it exists and is not default
+            if ($user->profile_image && $user->profile_image != 'default.png') {
+                $oldImagePath = $profileImagePath . '/' . $user->profile_image;
+                if (file_exists($oldImagePath)) {
+                    @unlink($oldImagePath); // Use @unlink to suppress warning
+                }
             }
 
             $user->profile_image = $imageName;
         }
 
+        // Update other fields
         $user->name = $request->name;
+        $user->shop_id = $request->shop_id;
         $user->email = $request->email;
         $user->mobile = $request->mobile;
         $user->city = $request->city;
@@ -61,10 +77,9 @@ class ProfileController extends Controller
         $user->address = $request->address;
         $user->save();
 
-        
-
         return response()->json(['message' => 'Profile updated successfully!']);
     }
+
 
     public function changePassword(Request $request)
     {

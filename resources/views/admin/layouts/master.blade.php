@@ -17,9 +17,9 @@
     <div class="wrapper">
         <!--sidebar wrapper -->
         <div class="sidebar-wrapper" data-simplebar="true">
-            <div class="sidebar-header">
-                <div>
-                    <img style="width: 100%" src="{{ asset('assets/images/app/logo.jpeg') }}" class="logo-icon" alt="logo icon">
+            <div class="sidebar-header" style="padding-left: 4rem; padding-top: 3.5rem; padding-bottom: 5rem;">
+                <div >
+                    <center><img style="width: 90px;" src="{{ asset('assets/images/app/glowmart.webp') }}" class="logo-icon" alt="logo icon"></center>  
                 </div>
                 <div class="toggle-icon ms-auto"><i class='bx bx-arrow-back'></i></div>
             </div>

@@ -289,7 +289,7 @@
                                 @else
                                     <button class="add-to-cart" data-product-id="{{ $product->id }}">Add to Cart</button>
                                 @endif
-            
+
                                 <a href="" target="_blank" class="whatsapp-btn">
                                     <i class="fa-brands fa-whatsapp"></i>
                                 </a>
@@ -302,7 +302,7 @@
                     </div>
                 @endif
             </section>
-            
+
 
         </div>
     </div>
@@ -311,10 +311,12 @@
 
 @section('scriptJs')
     <script>
-        $(document).on("click", ".add-to-cart", function() {
+        $(document).on("click", ".add-to-cart", function(e) {
             let button = $(this);
-            if (!isUserLoggedIn) {
-                alert("Please login to add products to cart.");
+            var isUserCustomer = {{ (Auth::check() && Auth::user()->role_id == 2) ? 'true' : 'false' }};
+            if (!isUserCustomer) {
+                e.preventDefault();
+                $('#loginModal').modal('show');
                 return;
             }
             // Agar already cart-controls-active hai to kuch mat karo
@@ -340,7 +342,7 @@
                     `)
                             .addClass("cart-controls-active")
                             .attr("data-product-id", productId); // Reassign
-                        updateCartCountUI(res.cartCount);
+                        updateCartCountUI(res.cartCount); // Update Cart Count
                     }
                 },
                 error: function(xhr) {
@@ -358,7 +360,6 @@
 
             let newQty = count + 1;
             countSpan.text(newQty);
-
             updateCart(productId, newQty);
         });
 
@@ -367,7 +368,6 @@
             let wrapper = $(this).closest(".add-to-cart");
             let productId = wrapper.data("product-id");
             let countSpan = wrapper.find(".cart-count");
-            let cartCount = $('#headerCartCount').data('id');
             let count = parseInt(countSpan.text());
 
             if (count > 1) {
@@ -377,7 +377,6 @@
             } else {
                 // Quantity = 0, remove UI & call delete
                 updateCart(productId, 0, wrapper);
-                updateCartCountUI(cartCount);
             }
         });
 
@@ -397,7 +396,7 @@
                             `<button class="add-to-cart" data-product-id="${productId}">Add to Cart</button>`
                         );
                     }
-                    console.log("Updated", res);
+                    updateCartCountUI(res.cartCount); // Update Cart Count
                 },
                 error: function(xhr) {
                     console.log("Update Error:", xhr.responseText);
@@ -405,8 +404,25 @@
             });
         }
 
+        // Update cart count on the UI
         function updateCartCountUI(count) {
-            $(".cart-badge").text(count);
+            let badge = $("#headerCartCount");
+
+            if (count > 0) {
+                if (badge.length) {
+                    badge.text(count).attr("data-id", count).show();
+                } else {
+                    $('.bi-cart').after(`
+                <span id="headerCartCount" data-id="${count}"
+                    class="position-absolute badge rounded-circle bg-success d-flex align-items-center justify-content-center"
+                    style="top: 2px; right: 2px; font-size: 12px; width: 18px; height: 18px;">
+                    ${count}
+                </span>
+            `);
+                }
+            } else {
+                badge.remove(); // Agar 0 hai to hata do
+            }
         }
     </script>
 @endsection

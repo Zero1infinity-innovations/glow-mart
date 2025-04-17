@@ -76,11 +76,11 @@
                     </ul>
                 </div>
                 <a href="{{ route('frontend.cart') }}" class="btn px-2 d-none d-md-inline position-relative">
-                    <i class="bi bi-cart"></i>
+                    <i class="bi bi-cart" style="font-size: 24px;"></i>
                     @if ($count != 0)
-                        <span data-id="{{ $count }}"
-                            class="cart-badge badge rounded-pill bg-danger small-badge position-absolute top-0 start-100 translate-middle p-1"
-                            id="headerCartCount">
+                        <span id="headerCartCount" data-id="{{ $count }}"
+                            class="position-absolute badge rounded-circle bg-success d-flex align-items-center justify-content-center"
+                            style="top: 2px; right: 2px; font-size: 12px; width: 18px; height: 18px;">
                             {{ $count }}
                         </span>
                     @endif
@@ -218,13 +218,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="registerForm">
+                <form id="">
                     @csrf
-                    <input type="text" name="name" placeholder="Name" class="form-control mb-2" required>
-                    <input type="email" name="email" placeholder="Email" class="form-control mb-2" required>
-                    <input type="text" name="mobile" placeholder="Mobile Number" class="form-control mb-2"
+                    <input type="text" id="name" name="name" placeholder="Name" class="form-control mb-2" required>
+                    <input type="email" id="email" name="email" placeholder="Email" class="form-control mb-2" required>
+                    <input type="text" id="mobile" name="mobile" placeholder="Mobile Number" class="form-control mb-2"
                         required>
-                    <input type="password" name="password" placeholder="Password" class="form-control mb-2"
+                    <input type="password" id="registerPassword" name="password" placeholder="Password" class="form-control mb-2"
                         required>
                     <input type="text" id="pincode" name="pincode" placeholder="Enter Pincode"
                         class="form-control mb-2" required>
@@ -232,7 +232,7 @@
                     <select name="shop_id" id="shopSelect" class="form-control mb-2">
                         <option value="">Select Shop</option>
                     </select>
-                    <button type="submit" class="btn btn-success">Register</button>
+                    <button type="button" id="registerForm" class="btn btn-success">Register</button>
                 </form>
             </div>
         </div>
@@ -248,111 +248,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="loginForm">
+                <form>
                     @csrf
-                    <input type="text" name="login" placeholder="Email or Mobile" class="form-control mb-2"
-                        required>
-                    <input type="password" name="password" placeholder="Password" class="form-control mb-2"
-                        required>
-                    <button type="submit" class="btn btn-primary">Login</button>
+                    <input type="text" id="username" name="login" placeholder="Email or Mobile" class="form-control mb-2" required>
+                    <input type="password" id="loginPassword" name="password" placeholder="Password" class="form-control mb-2" required>
+                    <button type="submit" id="loginForm" class="btn btn-primary">Login</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-@section('scriptJs')
-    <script>
-        $(document).ready(function() {
-            $('#pincode').on('input', function() {
-                let pincode = $(this).val();
-                let url = window.location.origin + "/login",
-
-                if (pincode.length === 6) { // Ensure valid pincode length
-                    $.ajax({
-                        url: `/get-shops/${pincode}`,
-                        type: 'GET',
-                        success: function(response) {
-                            $('#shopSelect').empty().append(
-                                '<option value="">Select Shop</option>');
-                            $.each(response, function(index, shop) {
-                                $('#shopSelect').append(
-                                    `<option value="${shop.id}">${shop.shop_name}</option>`
-                                );
-                            });
-                        },
-                        error: function() {
-                            $('#shopSelect').empty().append(
-                                '<option value="">No Shops Found</option>');
-                        }
-                    });
-                }
-            });
-        });
-    </script>
-    <script>
-        $(document).ready(function() {
-            // Register User
-            $("#registerForm").submit(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: "/register",
-                    type: "POST",
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        Swal.fire({
-                            title: "Registration Successful!",
-                            text: response.message,
-                            icon: "success",
-                            confirmButtonText: "OK"
-                        }).then(() => {
-                            location.reload();
-                            // $("#registerModal").modal("hide"); // Hide modal after success
-                            // $("#registerForm")[0].reset(); // Clear form
-                        });
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            title: "Error!",
-                            text: xhr.responseJSON.message || "Something went wrong!",
-                            icon: "error",
-                            confirmButtonText: "OK"
-                        });
-                    }
-                });
-            });
-
-            // Login User
-            $("#loginForm").submit(function(e) {
-                let url = window.location.origin + "/login",
-                console.log(url);
-                e.preventDefault();
-                $.ajax({
-                    url: "/login",
-                    type: "POST",
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        window.location.reload();
-                    },
-                    error: function(xhr) {
-                        alert(xhr.responseJSON.message);
-                    }
-                });
-            });
-
-            $("#logoutForm").submit(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: "/logout",
-                    type: "POST",
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        window.location.reload();
-                    },
-                    error: function(xhr) {
-                        alert(xhr.responseJSON.message);
-                    }
-                });
-            });
-        });
-    </script>
-@endsection

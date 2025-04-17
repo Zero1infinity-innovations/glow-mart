@@ -1,4 +1,4 @@
-<ul class="metismenu" id="menu">
+<ul class="metismenu" id="menu" style="padding-top: 5rem; ">
     <li>
         <a href="{{ route('admin.dashboard') }}">
             <div class="parent-icon"><i class='bx bx-home-alt'></i></div>

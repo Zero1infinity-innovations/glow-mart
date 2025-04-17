@@ -35,5 +35,15 @@
             transform: translate(-30%, -30%) !important;
             /* Move closer to icon */
         }
+        .cart-badge.updated {
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); background-color: #ffc107; }
+            50% { transform: scale(1.2); background-color: #28a745; }
+            100% { transform: scale(1); background-color: #ffc107; }
+        }
+
     </style>
 </head>
