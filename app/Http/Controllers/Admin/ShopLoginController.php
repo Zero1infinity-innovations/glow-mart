@@ -28,11 +28,8 @@ class ShopLoginController extends Controller
     public function productList()
     {
         $shopId = auth()->user()->shop_id;
-        $productLists = AssignProduct::where('shop_id', $shopId)
-            ->with('product')
-            ->paginate(10);
-
-        return view('admin.shop-login.productList', compact('productLists'));
+        $assignedProducts = AssignProduct::where('shop_id', $shopId)->with(['product', 'variant'])->get()->groupBy('product_id');
+        return view('admin.shop-login.productList', compact('assignedProducts'));
     }
 
     public function orderList()

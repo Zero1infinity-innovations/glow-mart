@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -45,58 +46,127 @@ class OrderController extends Controller
     }
 
 
+    // public function generateInvoice($orderId)
+    // {
+    //     // Fetch order with related user and order items
+    //     $order = Order::with(['user', 'orderItems.product'])->findOrFail($orderId);
+    //     dd($order);
+    //     $filename = "invoice-{$order->order_number}.pdf";
+
+    //     // Check if invoice already exists
+    //     $invoiceData = Invoice::where('order_number', $order->order_number)->first();
+
+    //     if (!$invoiceData) {
+    //         $invoiceData = Invoice::create([
+    //             'order_number' => $order->order_number,
+    //             'user_id' => $order->user_id,
+    //             'file_path' => "invoices/" . $filename
+    //         ]);
+    //     }
+
+    //     $invoiceId = $invoiceData->id;
+
+    //     // Initialize values
+    //     $subtotal = 0;
+    //     $taxPercentage = $order->tax_amount ?? 0;
+    //     $taxAmount = 0;
+    //     $totalSavings = 0;
+
+    //     // Loop through order items
+    //     foreach ($order->orderItems as $orderItem) {
+    //         $quantity = $orderItem->quantity;
+    //         $mrp = $orderItem->product->mrp_price ?? 0;
+    //         $salePrice = $orderItem->product->sale_price ?? 0;
+
+    //         $subtotal += $quantity * $salePrice;
+
+    //         // Calculate saving: (MRP - Sale Price) * Quantity
+    //         if ($mrp > $salePrice) {
+    //             $totalSavings += ($mrp - $salePrice) * $quantity;
+    //         }
+    //     }
+
+    //     // Tax Calculation
+    //     $taxAmount = ($subtotal * $taxPercentage) / 100;
+    //     $total = $subtotal + $taxAmount;
+
+    //     // Load and save PDF
+    //     $pdf = PDF::loadView('admin.orders.invoice', compact(
+    //         'order',
+    //         'taxPercentage',
+    //         'taxAmount',
+    //         'subtotal',
+    //         'total',
+    //         'invoiceId',
+    //         'totalSavings'
+    //     ));
+
+    //     $publicPath = public_path("invoices/{$filename}");
+
+    //     if (!file_exists(public_path('invoices'))) {
+    //         mkdir(public_path('invoices'), 0777, true);
+    //     }
+
+    //     $pdf->save($publicPath);
+
+    //     return response()->download($publicPath);
+    // }
+
     public function generateInvoice($orderId)
     {
-        // Fetch order with related user and order items
+        // Load order, user, orderItems, and product variants via SKU
         $order = Order::with(['user', 'orderItems.product'])->findOrFail($orderId);
+        // dd($order->user->name);
         $filename = "invoice-{$order->order_number}.pdf";
 
         // Check if invoice already exists
-        $invoiceData = Invoice::where('order_number', $order->order_number)->first();
-
-        if (!$invoiceData) {
-            $invoiceData = Invoice::create([
-                'order_number' => $order->order_number,
-                'user_id' => $order->user_id,
-                'file_path' => "invoices/" . $filename
-            ]);
-        }
+        $invoiceData = Invoice::firstOrCreate(
+            ['order_number' => $order->order_number],
+            ['user_id' => $order->user_id, 'file_path' => "invoices/" . $filename]
+        );
 
         $invoiceId = $invoiceData->id;
 
-        // Initialize values
+        // Initialize
         $subtotal = 0;
-        $taxPercentage = $order->tax_amount ?? 0;
-        $taxAmount = 0;
         $totalSavings = 0;
+        $taxPercentage = $order->tax_amount ?? 0;
 
-        // Loop through order items
-        foreach ($order->orderItems as $orderItem) {
-            $quantity = $orderItem->quantity;
-            $mrp = $orderItem->product->mrp_price ?? 0;
-            $salePrice = $orderItem->product->sale_price ?? 0;
+        // We'll fetch variants in one query using SKUs
+        $skus = $order->orderItems->pluck('sku')->filter()->unique()->toArray();
+
+        $variants = DB::table('product_variants')
+            ->whereIn('sku', $skus)
+            ->get()
+            ->keyBy('sku');
+        // Calculate totals
+        foreach ($order->orderItems as $item) {
+            $quantity = $item->quantity;
+            $mrp = $item->product->mrp_price ?? 0;
+            $salePrice = $item->product->sale_price ?? 0;
 
             $subtotal += $quantity * $salePrice;
 
-            // Calculate saving: (MRP - Sale Price) * Quantity
             if ($mrp > $salePrice) {
                 $totalSavings += ($mrp - $salePrice) * $quantity;
             }
         }
 
-        // Tax Calculation
         $taxAmount = ($subtotal * $taxPercentage) / 100;
         $total = $subtotal + $taxAmount;
 
-        // Load and save PDF
+        $receivedAmount = $order->paid_amount ?? 0;
+
         $pdf = PDF::loadView('admin.orders.invoice', compact(
             'order',
+            'invoiceId',
+            'subtotal',
             'taxPercentage',
             'taxAmount',
-            'subtotal',
             'total',
-            'invoiceId',
-            'totalSavings'
+            'totalSavings',
+            'receivedAmount',
+            'variants'
         ));
 
         $publicPath = public_path("invoices/{$filename}");
