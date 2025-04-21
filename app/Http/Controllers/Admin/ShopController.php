@@ -160,24 +160,12 @@ class ShopController extends Controller
 
     public function assignProducts(Request $request)
     {
-        // $shop_id = $request->input('shop_id');
-        // $product_ids = $request->input('product_ids', []);
-        // $quantities = $request->input('quantities', []);
-
-        // foreach ($product_ids as $product_id) {
-        //     $quantity = $quantities[$product_id] ?? 1;
-
-        //     AssignProduct::updateOrCreate(
-        //         ['shop_id' => $shop_id, 'product_id' => $product_id],
-        //         ['quantity' => $quantity]
-        //     );
-        // }
+      
         $shopId = $request->shop_id;
         $productIds = $request->product_ids;
         $quantities = $request->quantities;
         $variants = $request->variants;
-        // dd($productIds);
-        // Loop through the selected products
+       
         foreach ($productIds as $productId) {
             // Check if variants are available for this product
             if (!empty($variants[$productId])) {

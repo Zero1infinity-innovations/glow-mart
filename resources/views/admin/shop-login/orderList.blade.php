@@ -14,9 +14,6 @@
                 <h6 class="mb-0 text-uppercase">Order List</h6>
             </div>
             <div class="col-6 text-end px-0 px-lg-3 mb-3">
-                <a href="{{ route('admin.inventory.create') }}" class="btn btn-primary btn-sm px-3">
-                    <i class='bx bx-download'></i> Import Stock
-                </a>
                 <a href="{{ route('admin.shop.order.create') }}" class="btn btn-primary btn-sm px-3">
                     <i class='bx bx-plus'></i> Create Order
                 </a>

@@ -120,6 +120,7 @@ Route::middleware(['auth'])->group(function() {
         Route::get('product-list', [ShopLoginController::class, 'productList'])->name('shop.product.list');
         Route::get('order-list', [ShopLoginController::class, 'orderList'])->name('shop.order.list');
         Route::get('order-create', [ShopLoginController::class, 'orderCreate'])->name('shop.order.create');
+        Route::post('order-store', [ShopLoginController::class, 'orderStore'])->name('shop.order.store');
         Route::get('/current-stock', [InventoryController::class, 'index'])->name('shop.inventory.index');
         Route::get('/user-details', [DashBoardController::class, 'getUserDetails'])->name('shop.users.index');
     });
