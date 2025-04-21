@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function() {
         Route::get('edit/{id}', [AddproductController::class, 'edit'])->name('product.edit');
         Route::post('update/{id}', [AddproductController::class, 'update'])->name('product.update');
         Route::delete('/product/{id}', [AddproductController::class, 'destroy'])->name('product.destroy');
+        Route::post('/store-product-variance', [AddproductController::class, 'storeProductVariance'])->name('product.variance.store');
     });
 
     Route::prefix('shops')->group(function () {
@@ -57,6 +58,7 @@ Route::middleware(['auth'])->group(function() {
         Route::get('shop-edit/{id}', [ShopController::class, 'editShop'])->name('shops.edit');
         Route::post('shop-update/{id}', [ShopController::class, 'updateShop'])->name('shops.update');
         Route::delete('shop/{id}', [ShopController::class, 'destroyShop'])->name('shops.destroy');
+        Route::get('/get-product-variants/{id}', [ShopController::class, 'getProductVariants'])->name('shops.getProductVarince');
 
         Route::post('assign-products', [ShopController::class, 'assignProducts'])->name('shops.assign');
     });
@@ -89,6 +91,7 @@ Route::middleware(['auth'])->group(function() {
     // inventory
     Route::prefix('inventory')->group(function () {
         Route::get('/current-stock', [InventoryController::class, 'index'])->name('inventory.index');
+        Route::get('/shop-stock/{id}', [InventoryController::class, 'index'])->name('inventory.shop-stock');
         Route::get('/create', [InventoryController::class, 'create'])->name('inventory.create');
         Route::get('/get-shops', [InventoryController::class, 'getShopsByProduct'])->name('inventory.getShop');
         Route::post('/store', [InventoryController::class, 'storeInventory'])->name('inventory.store');
@@ -116,6 +119,7 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/', [ShopLoginController::class, 'dashboard'])->name('shop.dashboard');
         Route::get('product-list', [ShopLoginController::class, 'productList'])->name('shop.product.list');
         Route::get('order-list', [ShopLoginController::class, 'orderList'])->name('shop.order.list');
+        Route::get('order-create', [ShopLoginController::class, 'orderCreate'])->name('shop.order.create');
         Route::get('/current-stock', [InventoryController::class, 'index'])->name('shop.inventory.index');
         Route::get('/user-details', [DashBoardController::class, 'getUserDetails'])->name('shop.users.index');
     });

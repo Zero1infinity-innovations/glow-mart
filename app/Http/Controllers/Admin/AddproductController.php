@@ -9,10 +9,11 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\inventories;
 use App\Models\Inventory;
+use App\Models\ProductVariant;
 use App\Models\SubCategory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 use const Adminer\DB;
 
@@ -26,11 +27,11 @@ class AddproductController extends Controller
         $subcategory_id = $request->query('subcategory_id');
         if (Auth::check() && Auth::user()->role_id == 2) {
             $shop_id = Auth::user()->shop_id;
-        
+
             $assignedProductIds = DB::table('assign_products')
                 ->where('shop_id', $shop_id)
                 ->pluck('product_id');
-        
+
             if (!empty($subcategory_id)) {
                 $products = Product::where('subCategory', $subcategory_id)
                     ->whereIn('id', $assignedProductIds)
@@ -44,7 +45,7 @@ class AddproductController extends Controller
                     ->orderBy('id', 'desc')
                     ->get();
             }
-        }else{
+        } else {
             if (!empty($subcategory_id)) {
                 $products = Product::where('subCategory', $subcategory_id)->get();
             } elseif (!empty($category_id)) {
@@ -65,7 +66,7 @@ class AddproductController extends Controller
     public function index()
     {
         $categories = Category::all();
-        $products = Product::with('categoryName')->orderBy('id', 'desc')->paginate(10);
+        $products = Product::with('categoryName')->orderBy('id', 'desc')->get();
         return view('admin.product.index', compact('products', 'categories'));
     }
 
@@ -215,4 +216,50 @@ class AddproductController extends Controller
         return response()->json($subcategories);
     }
 
+    public function storeProductVariance(Request $request)
+    {
+
+        try {
+            // Generate SKU from product name + variant
+            $prefix = strtoupper($request->product_name);
+            $sku = $prefix . '-' . strtoupper(str_replace(' ', '', $request->variant));
+
+            // Image upload logic
+            $imageNames = [];
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $image) {
+                    $imageName = time() . '-' . Str::random(8) . '.' . $image->getClientOriginalExtension();
+                    $image->move(public_path('uploads/variants/'), $imageName);
+                    $imageNames[] = $imageName;
+                }
+            }
+            // Save to DB
+            ProductVariant::create([
+                'product_id'    => $request->productSelect,
+                'variant_name'  => $request->variant_name,
+                'size'          => $request->variant,
+                'quantity'      => $request->quantity,
+                'price'         => $request->price,
+                'sku'           => $sku,
+                'image'         => implode(',', $imageNames),
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Variant saved successfully!',
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Server Error',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

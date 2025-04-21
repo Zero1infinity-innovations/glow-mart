@@ -24,7 +24,7 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-striped table-hover table-bordered no-footer">
+                <table class="table table-striped table-hover table-bordered no-footer" id="data-table">
                     <thead class="table-light">
                         <tr>
                             <th>S No.</th>

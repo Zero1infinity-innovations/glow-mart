@@ -17,7 +17,7 @@ Product List
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-striped table-hover table-bordered no-footer" id="categoryList">
+            <table class="table table-striped table-hover table-bordered no-footer" id="data-table">
                 <thead class="table-light">
                     <tr id="thead-html">
                         <th>ID</th>
@@ -73,9 +73,6 @@ Product List
                         </td> -->
                     </tr>
                     @empty
-                    <tr>
-                        <td colspan="10" class="text-center">No products found.</td>
-                    </tr>
                     @endforelse
                 </tbody>
             </table>

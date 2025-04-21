@@ -21,7 +21,7 @@ Order List
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-striped table-hover table-bordered no-footer" id="orderList">
+            <table class="table table-striped table-hover table-bordered no-footer" id="data-table">
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
@@ -62,10 +62,6 @@ Order List
                     @endforelse
                 </tbody>
             </table>
-        </div>
-
-        <div class="d-flex justify-content-center mt-3">
-            {{ $orders->links() }}
         </div>
     </div>
 </div>

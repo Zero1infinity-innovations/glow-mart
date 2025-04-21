@@ -9,6 +9,10 @@
         <div class="alert alert-success mt-3">
             {{ session('success') }}
         </div>
+    @elseif (session('error'))
+        <div class="alert alert-danger mt-3">
+            {{ session('error') }}
+        </div>
     @endif
     <div class="row">
         <div class="col-6">
@@ -37,7 +41,7 @@
 
                 <br />
                 <label>Quantity</label>
-                <input type="text" name="qty" id="qty-input" class="form-control" readonly /><br />
+                <input type="text" name="qty" id="qty-input" class="form-control" /><br />
                 <label> Select Shop(s) </label>
                 <select name="shop_ids[]" class="form-control" id="shop-select" multiple>
                 </select><br />

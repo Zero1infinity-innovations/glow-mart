@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('assign_products', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('product_variants', function (Blueprint $table) {
+            $table->text('image')->nullable()->after('quantity');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('assign_products');
+        Schema::table('product_variants', function (Blueprint $table) {
+            $table->dropColumn('image');
+        });
     }
 };

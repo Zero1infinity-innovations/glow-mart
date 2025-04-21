@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\AssignProduct;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 use function PHPSTORM_META\type;
@@ -40,5 +41,16 @@ class ShopLoginController extends Controller
             $order->product_names = implode(', ', $products);
         }
         return view('admin.shop-login.orderList', compact('orders'));
+    }
+
+    public function orderCreate(){
+        $shopId = auth()->user()->shop_id;
+
+        $products = Product::where('quantity', '>', 0)->whereIn('id', function($query) use ($shopId) {
+            $query->select('product_id')->from('assign_products')->where('shop_id', $shopId);
+        })->get();
+        
+        $users = User::where('shop_id', $shopId)->where('role_id', 2)->get();
+        return view('admin.shop-login.orderCreate', compact('products', 'users'));
     }
 }

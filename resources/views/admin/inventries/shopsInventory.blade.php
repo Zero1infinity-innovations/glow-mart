@@ -1,7 +1,7 @@
 @extends('admin.layouts.master')
 
 @push('title')
-    Stock List
+    Shop Stock List
 @endpush
 
 @section('content')
@@ -16,13 +16,10 @@
     @endif
     <div class="row">
         <div class="col-6">
-            <h6 class="mb-0 text-uppercase">Add Stock</h6>
+            <h6 class="mb-0 text-uppercase">Stock List</h6>
         </div>
         <div class="col-6 text-end px-0 px-lg-3">
             @if (Auth::user()->role_id != 3)
-                <a href="{{ route('admin.inventory.create') }}" class="btn btn-primary btn-sm px-3">
-                    <i class='bx bx-download'></i> Import Stock
-                </a>
                 <a href="{{ route('admin.inventory.create') }}" class="btn btn-primary btn-sm px-3">
                     <i class='bx bx-plus'></i> Add
                 </a>
@@ -47,7 +44,7 @@
                         @foreach ($data as $item)
                             <tr>
                                 <td>{{ $sn++ }}</td>
-                                <td>{{ $item->product_name }}</td>
+                                <td>{{ $item->product->product_name }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->created_at->format('d M Y') }}</td>
                             </tr>

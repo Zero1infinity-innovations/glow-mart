@@ -10,7 +10,8 @@ class AssignProduct extends Model
     protected $fillable = [
         'shop_id',
         'product_id',
-        'quantity',
+        'qty',
+        'sku'
     ];
 
     // public function product(): BelongsTo

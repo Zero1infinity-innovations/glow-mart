@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Roles;
 use App\Models\AssignProduct;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -17,8 +18,13 @@ class ShopController extends Controller
     public function index()
     {
         $shops = Shop::paginate(10);
-        $products = Product::where('product_status', 1)->paginate(10);
+        $products = Product::where('product_status', 1)->get();
         return view('admin.shops.index', compact('shops', 'products'));
+    }
+    public function getProductVariants($id)
+    {
+        $variants = ProductVariant::where('product_id', $id)->get();
+        return response()->json(['variants' => $variants]);
     }
 
     public function createShop()
@@ -28,8 +34,8 @@ class ShopController extends Controller
 
     public function storeShopData(Request $request)
     {
-       // Validation
-       $request->validate([
+        // Validation
+        $request->validate([
             'shop_name'     => 'required|string|max:255',
             'owner_name'    => 'required|string|max:255',
             'owner_email'   => 'required|email|unique:shops,owner_email',
@@ -46,8 +52,8 @@ class ShopController extends Controller
         if (!file_exists(public_path('assets/shopIamges'))) {
             mkdir(public_path('assets/shopIamges'), 0777, true);
         }
-       
-        if($request->hasFile('shop_image')){
+
+        if ($request->hasFile('shop_image')) {
             $shopImage = $request->file('shop_image');
             $shopImageName = time() . '_' . $shopImage->getClientOriginalName();
             $shopImage->move(public_path('assets/shopIamges'), $shopImageName);
@@ -108,7 +114,7 @@ class ShopController extends Controller
         ]);
 
 
-        if($request->hasFile('shop_image')){
+        if ($request->hasFile('shop_image')) {
             $shopImage = $request->file('shop_image');
             $shopImageName = time() . '_' . $shopImage->getClientOriginalName();
             $shopImage->move(public_path('assets/shopIamges'), $shopImageName);
@@ -117,7 +123,7 @@ class ShopController extends Controller
             $shop->shop_image       = $shopImagePath;
         }
 
-        
+
         $shop->shop_name        = $request->shop_name;
         $shop->owner_name       = $request->owner_name;
         $shop->owner_email      = $request->owner_email;
@@ -129,7 +135,7 @@ class ShopController extends Controller
         $shop->phone_number     = $request->mobile_no;
         $shop->shop_status      = $request->shop_status;
         $shop->update();
-        
+
 
         return redirect()->route('admin.shops.index')->with('success', 'Shop updated successfully.');
     }
@@ -154,17 +160,47 @@ class ShopController extends Controller
 
     public function assignProducts(Request $request)
     {
-        $shop_id = $request->input('shop_id');
-        $product_ids = $request->input('product_ids', []);
-        $quantities = $request->input('quantities', []);
+        // $shop_id = $request->input('shop_id');
+        // $product_ids = $request->input('product_ids', []);
+        // $quantities = $request->input('quantities', []);
 
-        foreach ($product_ids as $product_id) {
-            $quantity = $quantities[$product_id] ?? 1;
+        // foreach ($product_ids as $product_id) {
+        //     $quantity = $quantities[$product_id] ?? 1;
 
-            AssignProduct::updateOrCreate(
-                ['shop_id' => $shop_id, 'product_id' => $product_id],
-                ['quantity' => $quantity]
-            );
+        //     AssignProduct::updateOrCreate(
+        //         ['shop_id' => $shop_id, 'product_id' => $product_id],
+        //         ['quantity' => $quantity]
+        //     );
+        // }
+        $shopId = $request->shop_id;
+        $productIds = $request->product_ids;
+        $quantities = $request->quantities;
+        $variants = $request->variants;
+        // dd($productIds);
+        // Loop through the selected products
+        foreach ($productIds as $productId) {
+            // Check if variants are available for this product
+            if (!empty($variants[$productId])) {
+                // Loop through each variant and insert
+                foreach ($variants[$productId] as $variant) {
+                    AssignProduct::create([
+                        'shop_id' => $shopId,
+                        'product_id' => $productId,
+                        'sku' => $variant['sku'],  // Variant SKU
+                        'qty' => $variant['quantity'],  // Variant Quantity
+                    ]);
+                }
+            } else {
+                // No variant found, insert as simple product
+                $quantity = $quantities[$productId] ?? 1;  // default 1 if not set
+
+                AssignProduct::create([
+                    'shop_id' => $shopId,
+                    'product_id' => $productId,
+                    'sku' => '', // No variant SKU for simple product
+                    'qty' => $quantity,
+                ]);
+            }
         }
 
         return response()->json(['success' => true]);
