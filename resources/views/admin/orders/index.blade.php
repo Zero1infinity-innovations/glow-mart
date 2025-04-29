@@ -27,6 +27,7 @@ Order List
                         <th>#</th>
                         <th>Order No</th>
                         <th>User</th>
+                        <th>Shop Name</th>
                         <th>Products</th>
                         <th>Total</th>
                         <th>Payment</th>
@@ -42,6 +43,7 @@ Order List
                         <td>{{ $i }}</td>
                         <td>{{ $order->order_number }}</td>
                         <td>{{ $order->user->name ?? 'Guest' }}</td>
+                        <td>{{ $order->shop->shop_name }}</td>
                         <td>{{ $order->product_names }}</td>
                         <td>₹{{ $order->final_amount }}</td>
                         <td>

@@ -17,7 +17,7 @@
                             <div class="card-body">
                                 <div class="p-4">
                                     <div class="mb-2 text-center">
-                                        <img width="260px" src="{{ asset('assets/images/app/logo.jpeg') }}" alt="logo" />
+                                        <img width="150px" src="{{ asset('assets/images/app/glowmart.webp') }}" alt="logo" />
                                     </div>
                                     <div class="text-center mb-4">
                                         <p class="mb-0">Please log in to your account</p>

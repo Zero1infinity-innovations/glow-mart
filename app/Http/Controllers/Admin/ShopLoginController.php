@@ -95,7 +95,7 @@ class ShopLoginController extends Controller
 
         // Create Order
         $order = Order::create([
-            'shop_id'       => $shopId, // ya jo bhi logic ho
+            'shop_id'       => $shopId,
             'user_id'       => $userId,
             'product_ids'   => implode(', ', $request->product_id),
             'username'      => $username,

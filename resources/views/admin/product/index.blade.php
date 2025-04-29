@@ -112,8 +112,12 @@
                             <input type="number" class="form-control" id="quantity" name="quantity" required>
                         </div>
                         <div class="mb-3">
-                            <label for="quantity" class="form-label">Price</label>
-                            <input type="number" class="form-control" id="price" name="price" required>
+                            <label for="quantity" class="form-label">Sale Price</label>
+                            <input type="number" class="form-control" id="sale_price" name="sale_price" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">MRP Price</label>
+                            <input type="number" class="form-control" id="mrp_price" name="mrp_price" required>
                         </div>
                         <div class="mb-3">
                             <label for="images" class="form-label">Upload Images</label>

@@ -102,6 +102,7 @@ Route::middleware(['auth'])->group(function() {
 
     Route::prefix('users')->group(function () {
         Route::get('/user-details', [DashBoardController::class, 'getUserDetails'])->name('users.index');
+        Route::get('/export-users', [DashBoardController::class, 'exportUsers'])->name('users.export');
     });
 
     Route::prefix('shop/inventory')->name('shop.inventory.')->group(function () {

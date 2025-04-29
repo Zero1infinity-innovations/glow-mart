@@ -14,11 +14,11 @@
         <div class="col-6">
             <h6 class="mb-0 text-uppercase">User List</h6>
         </div>
-        {{-- <div class="col-6 text-end px-0 px-lg-3">
-            <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm px-3">
-                <i class='bx bx-plus'></i> Add User
+        <div class="col-6 text-end px-0 px-lg-3">
+            <a href="{{ route('admin.users.export') }}" class="btn btn-primary btn-sm px-3">
+                <i class='bx bx-upload'></i> Export User
             </a>
-        </div> --}}
+        </div>
     </div>
     <hr />
     <div class="card">
@@ -30,6 +30,7 @@
                             <th>S No.</th>
                             {{-- <th>Profile</th> --}}
                             <th>Name</th>
+                            <th>Shop Name</th>
                             <th>Email</th>
                             <th>Mobile</th>
                             <th>City</th>
@@ -57,6 +58,7 @@
                                         @endif
                                     </td> --}}
                                     <td>{{ $user->name }}</td>
+                                    <td>{{ $user->shop->shop_name?? 'N/A' }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->mobile ?? 'N/A' }}</td>
                                     <td>{{ $user->city ?? 'N/A' }}</td>

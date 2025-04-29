@@ -239,7 +239,8 @@ class AddproductController extends Controller
                 'variant_name'  => $request->variant_name,
                 'size'          => $request->variant,
                 'quantity'      => $request->quantity,
-                'price'         => $request->price,
+                'sale_price'    => $request->sale_price,
+                'mrp_price'     => $request->mrp_price,
                 'sku'           => $sku,
                 'image'         => implode(',', $imageNames),
             ]);

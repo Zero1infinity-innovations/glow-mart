@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,12 +16,15 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::with('user')->orderBy('created_at', 'desc')->paginate(10);
+        $orders = Order::with(['user', 'shop'])->orderBy('created_at', 'desc')->paginate(10);
 
         foreach ($orders as $order) {
             $productIds = explode(',', $order->product_ids);
             $products = Product::whereIn('id', $productIds)->pluck('product_name')->toArray();
             $order->product_names = implode(', ', $products);
+
+            // Shop name nikal lo
+            $order->shop_name = optional($order->shop)->shop_name ?? 'N/A';
         }
 
         return view('admin.orders.index', compact('orders'));
@@ -27,12 +32,60 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::with('user')->findOrFail($id);
+        $order = Order::with(['user', 'orderItems'])->findOrFail($id);
+        $skus = $order->orderItems->pluck('sku')->unique();
 
-        $productIds = explode(',', $order->product_ids);
-        $products = Product::whereIn('id', $productIds)->get();
+        $variants = ProductVariant::whereIn('sku', $skus)->get()->keyBy('sku');
+        $products = Product::whereIn('id', $variants->pluck('product_id'))->get()->keyBy('id');
 
-        return view('admin.orders.show', compact('order', 'products'));
+        $detailedItems = [];
+        $totalMrp = 0;
+        $totalPaid = 0;
+
+        foreach ($order->orderItems as $item) {
+            $variant = $variants[$item->sku] ?? null;
+
+            if ($variant) {
+                $product = $products[$variant->product_id] ?? null;
+                $mrp = $variant->mrp_price;
+                $sale = $variant->sale_price;
+            } else {
+                $product = Product::where('sku', $item->sku)->first();
+                $mrp = $product->mrp_price ?? 0;
+                $sale = $product->sale_price ?? 0;
+            }
+
+            $total_mrp_item = $mrp * $item->quantity;
+            $total_paid_item = $item->price * $item->quantity;
+
+            $totalMrp += $total_mrp_item;
+            $totalPaid += $total_paid_item;
+
+            $detailedItems[] = (object)[
+                'product_name' => $product->product_name ?? 'Unknown',
+                'product_image' => $product->product_image ?? null,
+                'sku' => $item->sku,
+                'quantity' => $item->quantity,
+                'mrp_price' => $mrp,
+                'sale_price' => $sale,
+                'price' => $item->price,
+                'total_mrp' => $total_mrp_item,
+                'total_paid' => $total_paid_item,
+                'saving' => $total_mrp_item - $total_paid_item,
+            ];
+        }
+
+        $orderSummary = [
+            'tax_amount' => $order->tax_amount,
+            'discount' => $order->discount,
+            'total_mrp' => $totalMrp,
+            'total_paid' => $totalPaid,
+            'grand_total' => $totalPaid + $order->tax_amount - $order->discount,
+            'total_saving' => ($totalMrp - $totalPaid) + $order->discount,
+        ];
+        // dd($detailedItems);
+
+        return view('admin.orders.show', compact('order', 'detailedItems', 'orderSummary'));
     }
 
 
